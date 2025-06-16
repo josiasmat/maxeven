@@ -2,7 +2,7 @@
 
 ## Online usage
 
-Visit: https://github.io/josiasmat/maxeven
+Visit: https://josiasmat.github.io/maxeven/
 
 ## More info
 
