@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "module": "ESNext", // should be ES2025, not regognized by VS Code yet
+        "target": "ESNext", // should be ES2025, not regognized by VS Code yet
+        "paths": { }
+    },
+    "include": ["./src/js"]
+}

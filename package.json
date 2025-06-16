@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "ctxmenu": "^2.0.2"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "scripts": {
+    "local": "http-server --port 8000 -o -c-1"
+  }
+}
