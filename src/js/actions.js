@@ -53,17 +53,28 @@ export function attachSectionMenu(section_container)
         },
         { isDivider: true },
         {
-            text: "Label type",
+            text: "Label type (F7)",
             subMenu: [
                 {
                     text: "Set content",
-                    action: () => preferences.setLabelTypeToSet()
+                    action: () => preferences.setLabelTypeToSet(),
+                    icon: () => checkMarkIfTrue(preferences.label_type == "set")
                 },
                 {
-                    text: "Set cardinality",
-                    action: () => preferences.setLabelTypeToCardinality()
+                    text: "Cardinalities",
+                    action: () => preferences.setLabelTypeToCardinality(),
+                    icon: () => checkMarkIfTrue(preferences.label_type == "cardinality")
+                },
+                {
+                    text: "None",
+                    action: () => preferences.setLabelTypeToNone(),
+                    icon: () => checkMarkIfTrue(preferences.label_type == "")
                 },
             ]
+        },
+        {
+            text: () => preferences.polygon ? "Hide polygons (F8)" : "Show polygons (F8)",
+            action: () => { preferences.polygon = !preferences.polygon; }
         },
         {
             text: "Switch theme (F9)",
@@ -98,7 +109,7 @@ export function attachCircleMenu(circle)
             disabled: () => !checkAlignmentOfDots(circle)
         },
         {
-            text: "Get complement (C)",
+            text: "Complement (C)",
             action: () => changeDotsToComplement(circle),
             disabled: () => !circle.hasAttribute("lines") || circle.querySelector(".dot[not-aligned]")
         },
@@ -155,17 +166,28 @@ export function attachCircleMenu(circle)
         },
         { isDivider: true },
         {
-            text: "Label type",
+            text: "Label type (F7)",
             subMenu: [
                 {
                     text: "Set content",
-                    action: () => preferences.setLabelTypeToSet()
+                    action: () => preferences.setLabelTypeToSet(),
+                    icon: () => checkMarkIfTrue(preferences.label_type == "set")
                 },
                 {
-                    text: "Set cardinality",
-                    action: () => preferences.setLabelTypeToCardinality()
+                    text: "Cardinalities",
+                    action: () => preferences.setLabelTypeToCardinality(),
+                    icon: () => checkMarkIfTrue(preferences.label_type == "cardinality")
+                },
+                {
+                    text: "None",
+                    action: () => preferences.setLabelTypeToNone(),
+                    icon: () => checkMarkIfTrue(preferences.label_type == "")
                 },
             ]
+        },
+        {
+            text: () => preferences.polygon ? "Hide polygons (F8)" : "Show polygons (F8)",
+            action: () => { preferences.polygon = !preferences.polygon; }
         },
         {
             text: "Switch theme (F9)",
@@ -412,6 +434,27 @@ export function dotPlaceholderClickHandler(e) {
 }
 
 
+function toggleLabelType() 
+{
+    switch ( preferences.label_type ) {
+        case "set":
+            preferences.setLabelTypeToCardinality();
+            break;
+        case "cardinality":
+            preferences.setLabelTypeToNone();
+            break;
+        default:
+            preferences.setLabelTypeToSet();
+    }
+}
+
+
+function togglePolygons() 
+{
+    preferences.polygon = !preferences.polygon;
+}
+
+
 /** @param {KeyboardEvent} e */
 export function keyPressHandler(e) {
     // console.log(`e.key == "${e.key}"\ne.code == "${e.code}"`);
@@ -454,6 +497,8 @@ export function keyPressHandler(e) {
         ["delete", () => {
             circle_container && deleteCirclePrompt(circle_container);
         }],
+        ["f7", () => toggleLabelType()],
+        ["f8", () => togglePolygons()],
         ["f9", () => preferences.switchTheme()],
         ["escape", () => unselectAllCircles()],
         ["ctrl++", () => preferences.changeColumns(-1)],
@@ -488,3 +533,8 @@ export function wheelHandler(e)
     }
 }
 
+
+function checkMarkIfTrue(condition)
+{
+    return condition ? "/assets/checked.svg" : ""
+}

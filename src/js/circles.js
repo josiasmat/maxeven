@@ -42,8 +42,8 @@ export function updateCircleLabel(circle)
             const ndots = Number.parseInt(circle.getAttribute("dots") ?? '0');
             label.style.fontSize = "140px";
             tspan.innerHTML = (nlines == 0) ? "…" : `${ndots}/${nlines}`;
+            }
             break;
-        }
         case "set": {
             const dots = Array.from(circle.querySelector(".dots")?.children ?? []);
             const set = dots.map( (dot) => 
@@ -52,9 +52,21 @@ export function updateCircleLabel(circle)
             const text = `{${set.join(',')}}`;
             label.style.fontSize = `${clamp(Math.round(1500/text.length), 12, 140)}px`;
             tspan.innerHTML = text;
+            }
             break;
-        }
+        default:
+            tspan.innerHTML = '';
     }
+}
+
+
+/** 
+ * @param {SVGElement} circle 
+ */
+function createCirclePolygon(circle)
+{
+    const poly = SvgTools.makePath([], { class: "polygon" });
+    circle.appendChild(poly);
 }
 
 
@@ -83,6 +95,7 @@ export function drawCircle(container)
     svg.appendChild(gdots);
 
     createCircleLabel(svg);
+    createCirclePolygon(svg);
     container.appendChild(svg);
 
     if ( last_lines_count )
@@ -121,12 +134,13 @@ export function copyCircle(src, dest)
 }
 
 
-export function pointOnCircle(deg) 
+export function pointOnCircle(deg, factor=1) 
 {
     const a = degToRad(deg);
-    const x = 500 + (Math.cos(a) * 450);
-    const y = 500 + (Math.sin(a) * 450);
-    return [x,y,a];
+    factor *= 450;
+    const x = 500 + (Math.cos(a) * factor);
+    const y = 500 + (Math.sin(a) * factor);
+    return {x:x, y:y, a:a};
 }
 
 
@@ -140,16 +154,16 @@ export function drawLines(circle, n)
     const glines = circle.querySelector(".lines");
     for ( let i = 0; i < n; i++ ) {
         const d = mod((360 / n * i) - 90, 360);
-        const [x,y,a] = pointOnCircle(d);
+        const p = pointOnCircle(d);
 
         const line = SvgTools.makeAngledLine(
-            x, y, 45, a, 
+            p.x, p.y, 45, p.a, 
             { class: "line", index: i, angle: d }
         );
         glines.appendChild(line);
 
         const dot_placeholder = SvgTools.makeCircle(
-            x, y, 30,
+            p.x, p.y, 30,
             { class: "dot-placeholder", index: i, angle: d }
         );
         glines.appendChild(dot_placeholder);

@@ -1,7 +1,8 @@
 import { SvgTools } from "./svgtools.js";
 import { dotClickHandler } from "./actions.js";
-import { updateCircleLabel } from "./circles.js";
+import { pointOnCircle, updateCircleLabel } from "./circles.js";
 import { mod } from "./utils.js";
+import { preferences } from "./preferences.js";
 
 
 export var last_dots_count = 0;
@@ -40,6 +41,7 @@ export function updateDots(circle, positions)
         setDotPosition(dot, positions[i]);
     }
     checkAlignmentOfDots(circle);
+    updateCirclePolygon(circle);
 }
 
 
@@ -70,6 +72,7 @@ export function addDot(circle, index)
     circle.setAttribute("dots", ndots+1);
     updateCircleLabel(circle);
     checkAlignmentOfDots(circle);
+    updateCirclePolygon(circle);
 }
 
 
@@ -84,6 +87,7 @@ export function removeDot(dot)
     gdots.removeChild(dot);
     circle.setAttribute("dots", ndots-1);
     updateCircleLabel(circle);
+    updateCirclePolygon(circle);
 }
 
 
@@ -101,6 +105,7 @@ export function drawDots(circle, n)
     circle.setAttribute("dots", n);
     updateCircleLabel(circle);
     checkAlignmentOfDots(circle);
+    updateCirclePolygon(circle);
     last_dots_count = n;
 }
 
@@ -132,6 +137,7 @@ export function clearDots(circle)
         gdots.removeChild(dot);
     circle.removeAttribute("dots");
     updateCircleLabel(circle);
+    updateCirclePolygon(circle);
 }
 
 
@@ -188,6 +194,7 @@ export function alignDotsToLines(circle)
     const gdots = circle.querySelector(".dots");
     for ( const dot of Array.from(gdots.children) )
         alignDotToNearestLine(dot, circle);
+    updateCirclePolygon(circle);
 }
 
 
@@ -206,6 +213,7 @@ export function changeDotsToComplement(circle)
 
     circle.setAttribute("dots", nlines - ndots);
     updateCircleLabel(circle);
+    updateCirclePolygon(circle);
 }
 
 
@@ -217,4 +225,22 @@ export function translateDots(circle, amount) {
     for ( const dot of Array.from(gdots.children) )
         translateDot(dot, nlines, amount);
     updateCircleLabel(circle);
+    updateCirclePolygon(circle);
 }
+
+
+/** @param {SVGElement} circle */
+export function updateCirclePolygon(circle) 
+{
+    const poly = circle.querySelector(".polygon");
+    if ( preferences.polygon ) {
+        const dots = Array.from(circle.querySelectorAll(".dot"));
+        const angles = dots.map((dot) => mod(Number.parseFloat(dot.getAttribute("pos"))*360-90, 360))
+                           .sort((a,b) => a-b);
+        const points = angles.map((x) => pointOnCircle(x, 0.8));
+        SvgTools.changePolygon(poly, points);
+    } else {
+        SvgTools.changePolygon(poly, []);
+    }
+}
+

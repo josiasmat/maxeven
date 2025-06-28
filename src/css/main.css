@@ -169,4 +169,13 @@ body {
             stroke-width: 5px;
         }
     }
+    .polygon {
+        stroke: var(--fg-weak-color);
+        stroke-width: 5px;
+        stroke-dasharray: 6, 3;
+        fill: var(--fg-weak-color);
+        fill-opacity: 10%;
+        transition-property: d;
+        transition-delay: 0.175s;
+    }
 }

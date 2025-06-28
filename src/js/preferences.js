@@ -1,4 +1,5 @@
 import { updateCircleLabel } from "./circles.js";
+import { updateCirclePolygon } from "./dots.js";
 import { LocalStorageHandler } from "./storage-handler.js";
 
 
@@ -18,21 +19,40 @@ export const preferences = {
         return this.storage.readNumber("columns", 4);
     },
 
+    get polygon() {
+        return this.storage.readBool("polygon-visible", false);
+    },
+
+    /** @param {Boolean} value */
+    set polygon(value) {
+        this.storage.writeBool("polygon-visible", value);
+        this.updateApp();
+    },
+
     /**
      * "set", "cadinality"
      * @return {String}
      */
     get label_type() {
-        return this.storage.readString("label-type", "set");
+        switch ( this.storage.readNumber("label-type", 0) ) {
+            case 1: return "set";
+            case 2: return "cardinality";
+            default: return "";
+        }
     },
 
     setLabelTypeToSet() {
-        this.storage.writeString("label-type", "set");
+        this.storage.writeNumber("label-type", 1);
         this.updateApp();
     },
 
     setLabelTypeToCardinality() {
-        this.storage.writeString("label-type", "cardinality");
+        this.storage.writeNumber("label-type", 2);
+        this.updateApp();
+    },
+
+    setLabelTypeToNone() {
+        this.storage.writeNumber("label-type", 0);
         this.updateApp();
     },
 
@@ -54,8 +74,10 @@ export const preferences = {
         document.documentElement.setAttribute("theme", this.theme);
         document.documentElement.style.setProperty("--columns", this.columns);
         const circles = document.querySelectorAll(".circle-container>svg");
-        for ( const circle of circles )
+        for ( const circle of circles ) {
             updateCircleLabel(circle);
+            updateCirclePolygon(circle);
+        }
     }
 
 }
