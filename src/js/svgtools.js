@@ -138,16 +138,27 @@ export const SvgTools = {
      * @returns {SVGPathElement}
      */
     makePolygon(points, attributes = {}) {
-        const count = points.length;
         const polygon = this.createElement("path", attributes);
-        let d = ['M', points[0].x, points[0].y];
+        this.changePolygon(polygon, points);
+        return polygon;
+    },
+
+    /**
+     * Changes an existing SVG polygon element.
+     * @param {SVGPolygonElement} elm - The polygon element.
+     * @param {{x: Number, y: Number}[]} points - An array of objects with _x_ and _y_ properties.
+     */
+    changePolygon(elm, points) {
+        const count = points.length;
         if ( count > 1 ) {
+            let d = ['M', points[0].x, points[0].y];
             for ( let i = 1; i < count; i++ )
                 if ( points[i] ) d.push('L', points[i].x, points[i].y);
             if ( count > 2 ) d.push('Z');
-            polygon.setAttribute("d", d.join(' '));
+            elm.setAttribute("d", d.join(' '));
+        } else {
+            elm.setAttribute("d", "");
         }
-        return polygon;
     },
     
     /**
@@ -161,14 +172,24 @@ export const SvgTools = {
      */
     makePath(d, attributes = {}, x = null, y = null) {
         const path = this.createElement("path", attributes);
+        this.changePath(path, d);
+        if ( x != null ) path.setAttribute('x', x.toString());
+        if ( y != null ) path.setAttribute('y', y.toString());
+        return path;
+    },
+    
+    /**
+     * Changes the d attribute of a SVG path element.
+     * @param {SVGPathElement} elm - The path element.
+     * @param {Array|String} d - The _d_ attribute of the path element, which can be a
+     *      string or an array of numbers and strings containing the data.
+     */
+    changePath(elm, d) {
         if ( Array.isArray(d) ) 
             d = d.filter((x) => x != null)
                  .map((x) => Array.isArray(x) ? x.join(' ') : x)
                  .join(' ');
-        path.setAttribute('d', d);
-        if ( x != null ) path.setAttribute('x', x.toString());
-        if ( y != null ) path.setAttribute('y', y.toString());
-        return path;
+        elm.setAttribute('d', d);
     },
     
     /**
