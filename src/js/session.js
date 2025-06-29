@@ -51,26 +51,3 @@ export function loadSession()
     }
 }
 
-
-function serializeArrayOfArrays(data) 
-{
-    if (!Array.isArray(data) || !data.every(sub => Array.isArray(sub) && sub.every(obj => typeof obj === 'object' && obj !== null))) {
-        throw new Error('Input must be an array of arrays of objects.');
-    }
-    return JSON.stringify(data);
-}
-
-
-function deserializeArrayOfArrays(str) 
-{
-    let parsed;
-    try {
-        parsed = JSON.parse(str);
-    } catch (e) {
-        throw new Error('Invalid JSON string.');
-    }
-    if (!Array.isArray(parsed) || !parsed.every(sub => Array.isArray(sub) && sub.every(obj => typeof obj === 'object' && obj !== null))) {
-        throw new Error('Deserialized data is not an array of arrays of objects.');
-    }
-    return parsed;
-}
