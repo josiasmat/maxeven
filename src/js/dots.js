@@ -3,6 +3,7 @@ import { dotClickHandler } from "./actions.js";
 import { pointOnCircle, updateCircleLabel } from "./circles.js";
 import { mod } from "./utils.js";
 import { preferences } from "./preferences.js";
+import { saveSession } from "./session.js";
 
 
 export var last_dots_count = 0;
@@ -42,6 +43,7 @@ export function updateDots(circle, positions)
     }
     checkAlignmentOfDots(circle);
     updateCirclePolygon(circle);
+    saveSession();
 }
 
 
@@ -73,6 +75,7 @@ export function addDot(circle, index)
     updateCircleLabel(circle);
     checkAlignmentOfDots(circle);
     updateCirclePolygon(circle);
+    saveSession();
 }
 
 
@@ -88,6 +91,7 @@ export function removeDot(dot)
     circle.setAttribute("dots", ndots-1);
     updateCircleLabel(circle);
     updateCirclePolygon(circle);
+    saveSession();
 }
 
 
@@ -106,6 +110,7 @@ export function drawDots(circle, n)
     updateCircleLabel(circle);
     checkAlignmentOfDots(circle);
     updateCirclePolygon(circle);
+    saveSession();
     last_dots_count = n;
 }
 
@@ -138,6 +143,7 @@ export function clearDots(circle)
     circle.removeAttribute("dots");
     updateCircleLabel(circle);
     updateCirclePolygon(circle);
+    saveSession();
 }
 
 
@@ -195,6 +201,7 @@ export function alignDotsToLines(circle)
     for ( const dot of Array.from(gdots.children) )
         alignDotToNearestLine(dot, circle);
     updateCirclePolygon(circle);
+    saveSession();
 }
 
 
@@ -214,6 +221,7 @@ export function changeDotsToComplement(circle)
     circle.setAttribute("dots", nlines - ndots);
     updateCircleLabel(circle);
     updateCirclePolygon(circle);
+    saveSession();
 }
 
 
@@ -226,6 +234,7 @@ export function translateDots(circle, amount) {
         translateDot(dot, nlines, amount);
     updateCircleLabel(circle);
     updateCirclePolygon(circle);
+    saveSession();
 }
 
 

@@ -9,7 +9,9 @@ import {
     drawDots, 
     updateDots 
 } from "./dots.js";
+
 import { preferences } from "./preferences.js";
+import { saveSession } from "./session.js";
 
 
 var circle_count = 0;
@@ -151,6 +153,7 @@ export function pointOnCircle(deg, factor=1)
  */
 export function drawLines(circle, n) 
 {
+    clearLines(circle);
     const glines = circle.querySelector(".lines");
     for ( let i = 0; i < n; i++ ) {
         const d = mod((360 / n * i) - 90, 360);
@@ -177,6 +180,7 @@ export function drawLines(circle, n)
     circle.setAttribute("lines", n);
     checkAlignmentOfDots(circle);
     updateCircleLabel(circle);
+    saveSession();
     last_lines_count = n;
 }
 
@@ -190,4 +194,5 @@ export function clearLines(circle)
     circle.removeAttribute("lines");
     updateCircleLabel(circle);
     checkAlignmentOfDots(circle);
+    saveSession();
 }

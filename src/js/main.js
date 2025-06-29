@@ -13,8 +13,9 @@ import {
     wheelHandler
 } from "./actions.js";
 import { preferences } from "./preferences.js";
+import { hasSavedSession, loadSession } from "./session.js";
 
-const main_container = document.getElementById("main-container");
+export const main_container = document.getElementById("main-container");
 
 var section_count = 0;
 
@@ -71,7 +72,8 @@ export function createCircle(section_container, insert_after=null)
 
 preferences.updateApp();
 
-createCircle(createSectionContainer());
+loadSession();
+
 document.addEventListener("pointerdown", outsideSectionClickHandler, { capture: true });
 document.addEventListener("wheel", wheelHandler, { capture: true, passive: false });
 window.addEventListener("keydown", keyPressHandler, { passive: false });
