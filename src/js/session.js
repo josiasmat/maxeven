@@ -25,7 +25,7 @@ export function saveSession()
                 })
         });
     const s = JSON.stringify(data);
-    console.log(`SESSION SAVED:\n${s}`);
+    // console.log(`SESSION SAVED:\n${s}`);
     session.writeString("session-data", s);
 }
 
@@ -34,7 +34,7 @@ export function loadSession()
 {
     if ( hasSavedSession() ) {
         const s = session.readString("session-data", '[[{"l:12,d:[]"}]]');
-        console.log(`SESSION LOADED:\n${s}`);
+        // console.log(`SESSION LOADED:\n${s}`);
         const data = JSON.parse(s);
         for ( const section_data of data ) {
             const section_container = createSectionContainer();
