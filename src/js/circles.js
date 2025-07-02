@@ -14,6 +14,14 @@ import { preferences } from "./preferences.js";
 import { saveSession } from "./session.js";
 
 
+export const SVG_SIZE = 1000;
+export const SVG_CENTER = SVG_SIZE / 2;
+export const CIRCLE_RADIUS = SVG_SIZE * 0.44;
+
+export const LINE_RADIUS = CIRCLE_RADIUS / 9;
+export const DOT_RADIUS = LINE_RADIUS * 0.7;
+
+
 var circle_count = 0;
 export var last_lines_count = 12;
 
@@ -22,7 +30,7 @@ export var last_lines_count = 12;
 function createCircleLabel(circle)
 {
     const label = SvgTools.createElement("text", 
-            { class: "label", x: 500, y: 500 }
+            { class: "label", x: SVG_CENTER, y: SVG_CENTER }
         );
     const tspan =  SvgTools.createElement("tspan", {});
 
@@ -52,7 +60,7 @@ export function updateCircleLabel(circle)
                     mod(Math.round(Number.parseFloat(dot.getAttribute("pos"))*nlines), nlines) 
                 ).sort((a,b)=>a-b);
             const text = `{${set.join(',')}}`;
-            label.style.fontSize = `${clamp(Math.round(1500/text.length), 12, 140)}px`;
+            label.style.fontSize = `${clamp(Math.round(CIRCLE_RADIUS*3.333/text.length), 12, CIRCLE_RADIUS/3)}px`;
             tspan.innerHTML = text;
             }
             break;
@@ -81,11 +89,10 @@ export function drawCircle(container)
     const circle_id = `circle${circle_count++}`;
 
     const svg = SvgTools.createElement("svg", {
-        height: "1000px", width: "1000px", 
-        viewBox: "0 0 1000 1000", id: circle_id
+        viewBox: `0 0 ${SVG_SIZE} ${SVG_SIZE}`, id: circle_id
     });
 
-    const circle = SvgTools.makeCircle(500, 500, 450,
+    const circle = SvgTools.makeCircle(SVG_CENTER, SVG_CENTER, CIRCLE_RADIUS,
         { class: "circle", id: `${circle_id}-shape` }
     );
 
@@ -139,9 +146,9 @@ export function copyCircle(src, dest)
 export function pointOnCircle(deg, factor=1) 
 {
     const a = degToRad(deg);
-    factor *= 450;
-    const x = 500 + (Math.cos(a) * factor);
-    const y = 500 + (Math.sin(a) * factor);
+    factor *= CIRCLE_RADIUS;
+    const x = SVG_CENTER + (Math.cos(a) * factor);
+    const y = SVG_CENTER + (Math.sin(a) * factor);
     return {x:x, y:y, a:a};
 }
 
@@ -160,13 +167,13 @@ export function drawLines(circle, n)
         const p = pointOnCircle(d);
 
         const line = SvgTools.makeAngledLine(
-            p.x, p.y, 45, p.a, 
+            p.x, p.y, LINE_RADIUS, p.a, 
             { class: "line", index: i, angle: d }
         );
         glines.appendChild(line);
 
         const dot_placeholder = SvgTools.makeCircle(
-            p.x, p.y, 30,
+            p.x, p.y, DOT_RADIUS,
             { class: "dot-placeholder", index: i, angle: d }
         );
         glines.appendChild(dot_placeholder);

@@ -1,6 +1,6 @@
 import { SvgTools } from "./svgtools.js";
 import { dotClickHandler } from "./actions.js";
-import { pointOnCircle, updateCircleLabel } from "./circles.js";
+import { DOT_RADIUS, pointOnCircle, updateCircleLabel } from "./circles.js";
 import { mod } from "./utils.js";
 import { preferences } from "./preferences.js";
 import { saveSession } from "./session.js";
@@ -124,7 +124,7 @@ function drawDot(circle, index, pos)
 {
     const gdots = circle.querySelector(".dots");
     const dot = SvgTools.makeCircle(
-        0, 0, 30, 
+        0, 0, DOT_RADIUS, 
         { class: "dot", index: index });
     dot.style.offsetPath = `url(#${circle.firstElementChild.id})`;
     setDotPosition(dot, pos);
