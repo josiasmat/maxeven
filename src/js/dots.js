@@ -232,7 +232,7 @@ export function changeDotsToComplement(circle)
     const ndots = dots.length;
 
     for ( let i = 0; i < nlines; i++ ) {
-        const dot_at_i = dots.find( (dot) => i == getDotPosition(dot)*nlines );
+        const dot_at_i = dots.find( (dot) => i == mod(getDotPosition(dot)*nlines, nlines) );
         dot_at_i ? removeDot(dot_at_i) : addDot(circle, i);
     }
 
