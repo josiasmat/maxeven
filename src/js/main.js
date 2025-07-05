@@ -1,19 +1,36 @@
+/*
+maxeven
+Copyright (C) 2025 Josias Matschulat
 
-// import { ctxmenu } from "./ctxmenu.js";
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+import { preferences } from "./preferences.js";
 import { drawCircle } from "./circles.js";
+import { loadSession } from "./session.js";
+import { selectCircle } from "./actions.js";
+import { attachCircleMenu, attachSectionMenu } from "./menus.js";
+import { keyPressHandler } from "./keyboard.js";
+
 import {
-    attachCircleMenu, 
-    attachSectionMenu,
     circleClickHandler,
     circleDoubleClickHandler,
-    keyPressHandler,
     outsideCircleClickHandler,
     outsideSectionClickHandler,
-    selectCircle,
     wheelHandler
-} from "./actions.js";
-import { preferences } from "./preferences.js";
-import { hasSavedSession, loadSession } from "./session.js";
+} from "./mouse.js";
+
 
 export const main_container = document.getElementById("main-container");
 
