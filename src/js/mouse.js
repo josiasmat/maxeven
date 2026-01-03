@@ -21,6 +21,7 @@ import { preferences } from "./preferences.js";
 import { 
     addDot, 
     alignDotToNearestLine, 
+    findNearDot, 
     removeDot 
 } from "./dots.js";
 
@@ -61,6 +62,14 @@ export function outsideSectionClickHandler(e) {
 /** @param {PointerEvent} e */
 export function dotClickHandler(e) {
     removeDot(e.currentTarget);
+}
+
+
+/** @param {PointerEvent} e */
+export function dotPointerEnterHandler(e) {
+    // bring element to top, only if it isn't already on top
+    if ( e.currentTarget.nextSibling )
+        e.currentTarget.parentNode.appendChild(e.currentTarget);
 }
 
 

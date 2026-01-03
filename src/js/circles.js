@@ -21,6 +21,7 @@ import { preferences } from "./preferences.js";
 import { saveSession } from "./session.js";
 import { clamp, degToRad, mod } from "./utils.js";
 import { dotPlaceholderClickHandler } from "./mouse.js";
+import { createCirclePolygon, recreateCirclePolygon } from "./polygon.js";
 
 import { 
     checkAlignmentOfDots, 
@@ -33,13 +34,24 @@ import {
 export const SVG_SIZE = 1000;
 export const SVG_CENTER = SVG_SIZE / 2;
 export const CIRCLE_RADIUS = SVG_SIZE * 0.44;
-
+export const CIRCLE_CIRCUMFERENCE = 2*Math.PI*CIRCLE_RADIUS;
 export const LINE_RADIUS = CIRCLE_RADIUS / 9;
-export const DOT_RADIUS = LINE_RADIUS * 0.7;
 
+const DOT_RADIUS_MULTIPLIER = 0.7;
+const DOT_RADIUS = LINE_RADIUS * DOT_RADIUS_MULTIPLIER;
 
 var circle_count = 0;
 export var last_lines_count = 12;
+
+
+export function lineRadius(n) {
+    return Math.min(LINE_RADIUS, CIRCLE_CIRCUMFERENCE/n*DOT_RADIUS_MULTIPLIER);
+}
+
+
+export function dotRadius(n_lines) {
+    return Math.min(DOT_RADIUS, CIRCLE_CIRCUMFERENCE/n_lines/2);
+}
 
 
 /** @param {SVGElement} circle */
@@ -87,16 +99,6 @@ export function updateCircleLabel(circle)
 
 
 /** 
- * @param {SVGElement} circle 
- */
-function createCirclePolygon(circle)
-{
-    const poly = SvgTools.makePath([], { class: "polygon" });
-    circle.appendChild(poly);
-}
-
-
-/** 
  * @param {HTMLElement} container 
  * @returns {SVGElement} 
  */
@@ -116,11 +118,10 @@ export function drawCircle(container)
     const gdots = SvgTools.createGroup({ class: "dots" });
     
     svg.appendChild(circle);
+    createCirclePolygon(svg);
     svg.appendChild(glines);
     svg.appendChild(gdots);
-
     createCircleLabel(svg);
-    createCirclePolygon(svg);
     container.appendChild(svg);
 
     if ( last_lines_count )
@@ -183,13 +184,13 @@ export function drawLines(circle, n)
         const p = pointOnCircle(d);
 
         const line = SvgTools.makeAngledLine(
-            p.x, p.y, LINE_RADIUS, p.a, 
+            p.x, p.y, lineRadius(n), p.a, 
             { class: "line", index: i, angle: d }
         );
         glines.appendChild(line);
 
         const dot_placeholder = SvgTools.makeCircle(
-            p.x, p.y, DOT_RADIUS,
+            p.x, p.y, dotRadius(n),
             { class: "dot-placeholder", index: i, angle: d }
         );
         glines.appendChild(dot_placeholder);
@@ -201,7 +202,8 @@ export function drawLines(circle, n)
     }
 
     circle.setAttribute("lines", n);
-    checkAlignmentOfDots(circle);
+    recreateCirclePolygon(circle);
+    updateDots(circle);
     updateCircleLabel(circle);
     saveSession();
     last_lines_count = n;

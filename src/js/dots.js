@@ -17,11 +17,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { SvgTools } from "./svgtools.js";
-import { DOT_RADIUS, pointOnCircle, updateCircleLabel } from "./circles.js";
+import { dotRadius, updateCircleLabel } from "./circles.js";
 import { mod } from "./utils.js";
-import { preferences } from "./preferences.js";
 import { saveSession } from "./session.js";
-import { dotClickHandler } from "./mouse.js";
+import { dotClickHandler, dotPointerEnterHandler } from "./mouse.js";
+import { updateCirclePolygon, rotateCirclePolygon, recreateCirclePolygon } from "./polygon.js";
 
 
 export var last_dots_count = 0;
@@ -53,11 +53,12 @@ export function translateDot(dot, nlines, amount)
  * @param {SVGElement} circle 
  * @param {[number]} positions 
  */
-export function updateDots(circle, positions)
+export function updateDots(circle, positions = null)
 {
-    for ( const dot of circle.querySelectorAll(".dot") ) {
-        const i = Number.parseInt(dot.getAttribute("index"));
-        setDotPosition(dot, positions[i]);
+    const nlines = Number.parseInt(circle.getAttribute("lines"));
+    for ( const [i,dot] of Array.from(circle.querySelectorAll(".dot")).entries() ) {
+        dot.setAttribute('r', dotRadius(nlines ?? 1))
+        if ( positions ) setDotPosition(dot, positions[i]);
     }
     checkAlignmentOfDots(circle);
     updateCirclePolygon(circle);
@@ -88,7 +89,7 @@ export function addDot(circle, index)
 {
     const nlines = Number.parseInt(circle.getAttribute("lines"));
     const ndots = Number.parseInt(circle.getAttribute("dots") ?? "0");
-    drawDot(circle, index, index / nlines);
+    drawDot(circle, index / nlines);
     circle.setAttribute("dots", ndots+1);
     updateCircleLabel(circle);
     checkAlignmentOfDots(circle);
@@ -122,7 +123,7 @@ export function drawDots(circle, n)
     clearDots(circle);
     for ( let i = 0; i < n; i++ ) {
         const p = i / n;
-        drawDot(circle, i, p);
+        drawDot(circle, p);
     }
     circle.setAttribute("dots", n);
     updateCircleLabel(circle);
@@ -134,20 +135,29 @@ export function drawDots(circle, n)
 
 
 /**
- * @param {SVGElement} circle_elm 
+ * @param {SVGElement} circle 
  * @param {number} index
  * @param {number} pos
  */
-function drawDot(circle, index, pos)
+function drawDot(circle, pos)
 {
+    const nlines = Number.parseInt(circle.getAttribute("lines"));
     const gdots = circle.querySelector(".dots");
+    const dots_positions = Array.from(gdots.children)
+        .map((dot) => parseFloat(dot.getAttribute("pos") ?? '0'));
+    if ( dots_positions.length ) {
+        const pos_min = Math.min(...dots_positions);
+        while ( pos < pos_min ) pos += 1;
+        while ( pos >= pos_min+1 ) pos -= 1;
+    }
     const dot = SvgTools.makeCircle(
-        0, 0, DOT_RADIUS, 
-        { class: "dot", index: index });
+        0, 0, dotRadius(nlines ?? 1), 
+        { class: "dot" });
     dot.style.offsetPath = `url(#${circle.firstElementChild.id})`;
     setDotPosition(dot, pos);
     gdots.appendChild(dot);
     dot.addEventListener("click", dotClickHandler, { capture: true });
+    dot.addEventListener("pointerenter", dotPointerEnterHandler, { capture: false });
     return dot;
 }
 
@@ -160,7 +170,7 @@ export function clearDots(circle)
         gdots.removeChild(dot);
     circle.removeAttribute("dots");
     updateCircleLabel(circle);
-    updateCirclePolygon(circle);
+    recreateCirclePolygon(circle, true);
     saveSession();
 }
 
@@ -195,7 +205,7 @@ function getDotPosition(dot)
  */
 function isDotAligned(dot, nlines)
 {
-    return Number.isInteger(getDotPosition(dot)*nlines);
+    return Number.isInteger(Math.round(getDotPosition(dot)*nlines*1024)/1024);
 }
 
 
@@ -208,6 +218,8 @@ export function alignDotToNearestLine(dot, circle)
     if ( pos != new_pos ) {
         setDotPosition(dot, new_pos);
         dot.removeAttribute("not-aligned");
+        updateCirclePolygon(circle);
+        saveSession();
     }
 }
 
@@ -218,7 +230,6 @@ export function alignDotsToLines(circle)
     const gdots = circle.querySelector(".dots");
     for ( const dot of Array.from(gdots.children) )
         alignDotToNearestLine(dot, circle);
-    updateCirclePolygon(circle);
     saveSession();
 }
 
@@ -232,13 +243,14 @@ export function changeDotsToComplement(circle)
     const ndots = dots.length;
 
     for ( let i = 0; i < nlines; i++ ) {
-        const dot_at_i = dots.find( (dot) => i == mod(getDotPosition(dot)*nlines, nlines) );
+        const dot_at_i = dots.find( (dot) => 
+            i == mod(Math.round(getDotPosition(dot)*nlines), nlines) );
         dot_at_i ? removeDot(dot_at_i) : addDot(circle, i);
     }
 
     circle.setAttribute("dots", nlines - ndots);
     updateCircleLabel(circle);
-    updateCirclePolygon(circle);
+    recreateCirclePolygon(circle, true);
     saveSession();
 }
 
@@ -251,23 +263,7 @@ export function translateDots(circle, amount) {
     for ( const dot of Array.from(gdots.children) )
         translateDot(dot, nlines, amount);
     updateCircleLabel(circle);
-    updateCirclePolygon(circle);
+    // updateCirclePolygon(circle);
+    rotateCirclePolygon(circle, amount);
     saveSession();
 }
-
-
-/** @param {SVGElement} circle */
-export function updateCirclePolygon(circle) 
-{
-    const poly = circle.querySelector(".polygon");
-    if ( preferences.polygon ) {
-        const dots = Array.from(circle.querySelectorAll(".dot"));
-        const angles = dots.map((dot) => mod(Number.parseFloat(dot.getAttribute("pos"))*360-90, 360))
-                           .sort((a,b) => a-b);
-        const points = angles.map((x) => pointOnCircle(x, 0.8));
-        SvgTools.changePolygon(poly, points);
-    } else {
-        SvgTools.changePolygon(poly, []);
-    }
-}
-

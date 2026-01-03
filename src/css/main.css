@@ -27,8 +27,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
         --divider-color: #0008;
         --misaligned-dot-color: red;
         --selection-fg-strong-color: blue;
-        --selection-fg-weak-color: #00fa;
-        --selection-bg-color: #77f1;
+        --selection-fg-weak-color: #00f;
+        /* --selection-bg-color: #77f1; */
         --selection-border-color: #cef;
     }
     &[theme="dark"] {
@@ -38,10 +38,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
         --divider-color: #fff8;
         --misaligned-dot-color: #f44;
         --selection-fg-strong-color: #7af;
-        --selection-fg-weak-color: #7afa;
-        --selection-bg-color: #77f2;
+        --selection-fg-weak-color: #7af;
+        /* --selection-bg-color: #77f2; */
         --selection-border-color: #cef;
     }
+    --selection-bg-color: color-mix(in srgb-linear, var(--bg-color) 90%, var(--selection-fg-strong-color) 10%);
     --columns: 4;
 }
 
@@ -127,8 +128,18 @@ body {
     padding: 5px;
     &[selected] {
         svg {
-            .circle { stroke: var(--selection-fg-strong-color); fill: var(--selection-bg-color); }
-            .label { fill: var(--selection-fg-weak-color)}
+            .circle { 
+                fill: var(--selection-bg-color); 
+                stroke: var(--selection-fg-strong-color); 
+                animation: 0.4s ease-out 0s infinite alternate selected-circle-animation;
+            }
+            .label { 
+                fill: var(--selection-fg-weak-color);
+                stroke: var(--selection-bg-color);
+            }
+            .polygon {
+                stroke-opacity: 100%;
+            }
         }
     }
 }
@@ -141,6 +152,7 @@ body {
     padding: 0;
     pointer-events: painted;
 
+    * { transform-origin: center; }
     .line {
         stroke: var(--fg-strong-color);
         stroke-width: 7px;
@@ -148,11 +160,16 @@ body {
     .circle {
         stroke: var(--fg-strong-color);
         stroke-width: 7px;
+        stroke-opacity: 50%;
         fill: transparent;
     }
     .label {
         fill: var(--fg-weak-color);
-        /* font-size: 150px; */
+        stroke: var(--bg-color);
+        stroke-width: 30px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        paint-order: stroke fill markers;
         text-anchor: middle;
         dominant-baseline: central;
     }
@@ -160,7 +177,6 @@ body {
         fill: var(--fg-strong-color);
         stroke: var(--fg-strong-color);
         stroke-width: 5px;
-        transform-origin: center;
         transform-box: border-box;
         cursor: pointer;
         transition-property: offset;
@@ -186,12 +202,19 @@ body {
         }
     }
     .polygon {
-        stroke: var(--fg-weak-color);
-        stroke-width: 5px;
-        stroke-dasharray: 6, 3;
+        stroke: var(--fg-strong-color);
+        stroke-width: 15px;
+        stroke-opacity: 50%;
         fill: var(--fg-weak-color);
         fill-opacity: 10%;
-        transition-property: d;
-        transition-delay: 0.175s;
+        transition-property: d, transform;
+        transition-duration: 0.35s;
+        transition-timing-function: ease-in-out;
     }
+}
+
+
+@keyframes selected-circle-animation {
+    0%   { stroke-opacity: 60%; }
+    100% { stroke-opacity: 100%; }
 }

@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { updateCircleLabel } from "./circles.js";
-import { updateCirclePolygon } from "./dots.js";
+import { updateCirclePolygon } from "./polygon.js";
 import { LocalStorageHandler } from "./storage-handler.js";
 
 

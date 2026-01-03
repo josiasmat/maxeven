@@ -46,7 +46,11 @@ export function putLinesPrompt(circle)
         last_lines_count ? last_lines_count : 12
     );
     const n = Number.parseInt(s);
-    if ( n && !Number.isNaN(n) ) {
+    if ( !Number.isNaN(n) && n > 0 ) {
+        if ( n < Array.from(circle.querySelectorAll(".dot")).length ) {
+            alert("Number of lines cannot be less than number of dots!");
+            return;
+        }
         clearLines(circle);
         drawLines(circle, n);
     }
@@ -60,8 +64,8 @@ export function putDotsPrompt(circle)
         last_dots_count ? last_dots_count : ""
     );
     const n = Number.parseInt(s);
-    if ( n && !Number.isNaN(n) ) {
-        if ( n > circle.querySelectorAll(".line").length ) {
+    if ( !Number.isNaN(n) && n >= 0 ) {
+        if ( n > Array.from(circle.querySelectorAll(".line")).length ) {
             alert("Number of dots cannot be greater than number of lines!");
             return;
         }
