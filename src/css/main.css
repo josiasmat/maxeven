@@ -205,6 +205,7 @@ body {
         stroke: var(--fg-strong-color);
         stroke-width: 15px;
         stroke-opacity: 50%;
+        stroke-linejoin: bevel;
         fill: var(--fg-weak-color);
         fill-opacity: 10%;
         transition-property: d, transform;
