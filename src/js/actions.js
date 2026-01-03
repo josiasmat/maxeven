@@ -41,6 +41,7 @@ export var selected_circle = null;
 
 export function putLinesPrompt(circle) 
 {
+    if ( !circle ) return;
     const s = prompt(
         "Type the number of lines:", 
         last_lines_count ? last_lines_count : 12
@@ -59,6 +60,7 @@ export function putLinesPrompt(circle)
 
 export function putDotsPrompt(circle)
 {
+    if ( !circle ) return;
     const s = prompt(
         "Type the number of dots:", 
         last_dots_count ? last_dots_count : ""
@@ -77,6 +79,7 @@ export function putDotsPrompt(circle)
 
 export function translateDotsPrompt(circle)
 {
+    if ( !circle ) return;
     const s = prompt("Type the value of x for T(x):", 0);
     const x = Number.parseInt(s);
     if ( x && !Number.isNaN(x) )
@@ -86,6 +89,7 @@ export function translateDotsPrompt(circle)
 
 export function duplicateCircle(source_circle)
 {
+    if ( !source_circle ) return;
     const circle_container = source_circle.parentElement;
     const section_container = circle_container.parentElement;
     const new_circle = createCircle(section_container, circle_container);
@@ -96,6 +100,7 @@ export function duplicateCircle(source_circle)
 
 export function deleteCirclePrompt(circle_container)
 {
+    if ( !circle_container ) return;
     const section_container = circle_container.parentElement;
     const sibling = circle_container.previousElementSibling ?? circle_container.nextElementSibling;
     if ( sibling ) {
@@ -111,6 +116,7 @@ export function deleteCirclePrompt(circle_container)
 /** @param {HTMLElement} section_container */
 export function deleteSectionPrompt(section_container)
 {
+    if ( !section_container ) return;
     const sibling = section_container.previousElementSibling ?? section_container.nextElementSibling;
     if ( section_container.nextElementSibling || section_container.previousElementSibling )
         if ( confirm("Delete section?") ) {
@@ -216,6 +222,7 @@ export function unselectAllCircles()
 
 export function doDefaultCircleAction(circle)
 {
+    if ( !circle ) return;
     if ( !circle.hasAttribute("lines") )
         putLinesPrompt(circle);
     else if ( !circle.hasAttribute("dots") )
