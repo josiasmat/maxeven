@@ -206,6 +206,6 @@ export function attachCircleMenu(circle)
 
 function checkMarkIfTrue(condition)
 {
-    return condition ? "/assets/checked.svg" : ""
+    return condition ? "assets/checked.svg" : ""
 }
 
